@@ -18,3 +18,7 @@ not_tracked_dir/
 docker/
 *.pth
 *log.txt
+
+*.out
+*.slurm
+commands.txt
