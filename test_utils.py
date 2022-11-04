@@ -29,10 +29,10 @@ CLASSES_COCO = [
 CLASSES = ["D00", "D10", "D20", "D40"]
 
 CLASS_NAMES = {
-    0: "Longitudinal crack",
-    1: "Transverse crack",
-    2: "Alligator crack",
-    3: "Pothole"
+    0: "D00: Longitudinal crack",
+    1: "D10: Transverse crack",
+    2: "D20: Alligator crack",
+    3: "D40: Pothole"
 }
 
 # colors for visualization
@@ -42,7 +42,7 @@ COLORS = [[0.000, 0.447, 0.741], [0.850, 0.325, 0.098], [0.929, 0.694, 0.125],
 # Standard PyTorch Transforms
 # standard PyTorch mean-std input image normalization
 transform = T.Compose([
-    T.Resize(800),
+    T.Resize(600),
     T.ToTensor(),
     T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
@@ -133,15 +133,14 @@ def plot_gt_preds(im, annotations, probas, bboxes_scaled):
 
     for a in annotations:
         x, y, w, h = a['bbox']
-        print(a['category_id'])
-        class_name = CLASS_NAMES[a['category_id']]
+        #print(a['category_id'])
+        #class_name = CLASS_NAMES[a['category_id']]
         class_code = CLASSES[a['category_id']]
         color = colors[a['category_id']]
         rect = patches.Rectangle((x, y), w, h, linewidth=2, edgecolor=color, facecolor='none')
         ax[0].add_patch(rect)
         ax[0].text(x, y, class_code, bbox={'facecolor': color, 'alpha': 0.5})
-        ax[0].legend(handles=[patches.Patch(color=color, label=class_name) for class_name, color in zip(CLASS_NAMES.values(), colors)])
-        
+    ax[0].legend(handles=[patches.Patch(color=color, label=class_name) for class_name, color in zip(CLASS_NAMES.values(), colors)])    
     plt.axis('off')
 
     ax[1].imshow(im)
@@ -155,8 +154,7 @@ def plot_gt_preds(im, annotations, probas, bboxes_scaled):
         text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
         ax[1].text(xmin, ymin, text, fontsize=15,
                 bbox=dict(facecolor='yellow', alpha=0.5))
-        ax[1].legend(handles=[patches.Patch(color=color, label=class_name) for class_name, color in zip(CLASS_NAMES.values(), colors)])
-
+    ax[1].legend(handles=[patches.Patch(color=color, label=class_name) for class_name, color in zip(CLASS_NAMES.values(), colors)])
     plt.axis('off')
 
     return fig

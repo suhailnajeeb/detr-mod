@@ -7,7 +7,7 @@ from models import build_model
 
 CLASSES = ["D00", "D10", "D20", "D40"]
 
-random.seed(3)
+#random.seed()
 
 data_root = '/Users/muhammadsuha/Datasets/RDD-2022/coco_JP_IN_CZ_CM_CD_NW_US/'
 set_name = 'val2017'
@@ -44,7 +44,7 @@ model = load_model_from_ckp(model_path)
 img = transform(im).unsqueeze(0)
 
 # propagate through the model
-outputs = model(img)
+outputs = model(img )
 
 # keep only predictions with 0.7+ confidence
 probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
@@ -61,4 +61,4 @@ fig = plot_gt_preds(im, annotations, probas, bboxes_scaled)
 
 fig.savefig(model_dir + '{}.png'.format(file_name))
 
-plt.show()
+fig.show()
