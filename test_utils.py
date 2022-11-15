@@ -35,6 +35,16 @@ CLASS_NAMES = {
     3: "D40: Pothole"
 }
 
+country_dict = {
+    'China_Drone': '1',
+    'China_MotorBike': '2',
+    'Czech': '3',
+    'India': '4',
+    'Japan': '5',
+    'Norway': '6',
+    'United_States': '7'
+}
+
 # colors for visualization
 COLORS = [[0.000, 0.447, 0.741], [0.850, 0.325, 0.098], [0.929, 0.694, 0.125],
           [0.494, 0.184, 0.556], [0.466, 0.674, 0.188], [0.301, 0.745, 0.933]]
@@ -148,6 +158,8 @@ def plot_gt_preds(im, annotations, probas, bboxes_scaled):
 
     for p, (xmin, ymin, xmax, ymax) in zip(probas, bboxes_scaled.tolist()):
         cl = p.argmax()
+        print('class', cl)
+        print(p)
         color = colors[cl]
         ax[1].add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
                                     fill=False, color=color, linewidth=2))
@@ -158,3 +170,56 @@ def plot_gt_preds(im, annotations, probas, bboxes_scaled):
     plt.axis('off')
 
     return fig
+
+# def plot_gt_preds2(im, annotations, probas, bboxes_scaled):
+#     fig, ax = plt.subplots(1, 3, figsize=(30, 10))
+
+#     ax[0].imshow(im)
+#     ax[0].set_title('Ground Truth')
+
+#     for a in annotations:
+#         x, y, w, h = a['bbox']
+#         #print(a['category_id'])
+#         #class_name = CLASS_NAMES[a['category_id']]
+#         class_code = CLASSES[a['category_id']]
+#         color = colors[a['category_id']]
+#         rect = patches.Rectangle((x, y), w, h, linewidth=2, edgecolor=color, facecolor='none')
+#         ax[0].add_patch(rect)
+#         ax[0].text(x, y, class_code, bbox={'facecolor': color, 'alpha': 0.5})
+#     ax[0].legend(handles=[patches.Patch(color=color, label=class_name) for class_name, color in zip(CLASS_NAMES.values(), colors)])    
+#     plt.axis('off')
+
+#     ax[1].imshow(im)
+#     ax[1].set_title('Predictions')
+
+#     for p, (xmin, ymin, xmax, ymax) in zip(probas, bboxes_scaled.tolist()):
+#         cl = p.argmax()
+#         color = colors[cl]
+#         ax[1].add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
+#                                     fill=False, color=color, linewidth=2))
+#         text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+#         ax[1].text(xmin, ymin, text, fontsize=15,
+#                 bbox=dict(facecolor='yellow', alpha=0.5))
+#     ax[1].legend(handles=[patches.Patch(color=color, label=class_name) for class_name, color in zip(CLASS_NAMES.values(), colors)])
+#     plt.axis('off')
+
+
+
+    return fig
+
+# Function to get image_id from file_name
+
+def get_country(file_name):
+    file_name = file_name.split('.')[0]
+    return file_name[:-7]
+
+#def get_image_id(file_name):
+#    file_name = file_name.split('.')[0]
+#    return file_name[-6:]
+
+def get_image_id(file_name):
+    file_name = file_name.split('.')[0]
+    country = file_name[:-7]
+    image_id = file_name[-6:]
+    country_id = country_dict[country]
+    return int(country_id + image_id)
