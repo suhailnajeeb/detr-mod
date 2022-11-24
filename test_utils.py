@@ -130,6 +130,13 @@ def load_model_from_ckp(ckp_path):
     model.eval();
     return model
 
+def load_model_all_from_ckp(ckp_path):
+    model, criterion, postprocessors = build_model(ArgsModel())
+    model.load_state_dict(torch.load(ckp_path, map_location='cpu')['model'])
+    model.eval();
+    return model, criterion, postprocessors
+
+
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
 
