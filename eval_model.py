@@ -10,7 +10,10 @@ from datasets import get_coco_api_from_dataset
 import argparse
 import torch
 
+from test_utils import load_model_all_from_ckp
+from datasets.coco_eval import CocoEvaluator
 
+from tqdm import tqdm
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Set transformer detector', add_help=False)
@@ -81,7 +84,7 @@ def get_args_parser():
     parser.add_argument('--coco_panoptic_path', type=str)
     parser.add_argument('--remove_difficult', action='store_true')
 
-    parser.add_argument('--output_dir', default='',
+    parser.add_argument('--output_dir', default='/Users/muhammadsuha/projects/detr-mod/outputs/JICCCNU_01/',
                         help='path where to save, empty for no saving')
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
@@ -98,25 +101,67 @@ def get_args_parser():
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
     return parser
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
+    args = parser.parse_args()
 
 
-parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
-args = parser.parse_args()
+    model_path = args.output_dir + 'checkpoint.pth'
+
+    model, criterion, postprocessors = load_model_all_from_ckp(model_path)
+
+    dataset_val = build_dataset(image_set='val', args=args)
+
+    sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+
+    data_loader_val = DataLoader(dataset_val, args.batch_size, sampler=sampler_val,
+                                    drop_last=False, collate_fn=utils.collate_fn, num_workers=args.num_workers)
+
+    base_ds = get_coco_api_from_dataset(dataset_val)
+
+    device = torch.device(args.device)
+
+    test_stats, coco_evaluator = evaluate(model, criterion, postprocessors, \
+        data_loader_val, base_ds, device, args.output_dir)
+
+    # # EVALUATION STARTS HERE
+
+    # model.eval()
+    # criterion.eval()
+
+    # iou_types = tuple(k for k in ('segm', 'bbox') if k in postprocessors.keys())
+
+    # #breakpoint()
+
+    # coco_evaluator = CocoEvaluator(base_ds, iou_types)
+
+    # i = 0
+
+    # for samples, targets in tqdm(data_loader_val):
+    #     # Transfer to device
+    #     samples = samples.to(device)
+    #     targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+    #     # Get predictions
+    #     outputs = model(samples)
+    #     loss_dict = criterion(outputs, targets)
+    #     weight_dict = criterion.weight_dict         # Why do we need this again?
 
 
-model, criterion, postprocessors = build_model(args)
+    #     orig_target_sizes = torch.stack([t["orig_size"] for t in targets], dim=0)
+    #     results = postprocessors['bbox'](outputs, orig_target_sizes)
 
-dataset_val = build_dataset(image_set='val', args=args)
+    #     res = {target['image_id'].item(): output for target, output in zip(targets, results)}
 
-sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+    #     if coco_evaluator is not None:
+    #         coco_evaluator.update(res)
+        
+    #     i+= 1
 
-data_loader_val = DataLoader(dataset_val, args.batch_size, sampler=sampler_val,
-                                 drop_last=False, collate_fn=utils.collate_fn, num_workers=args.num_workers)
+    #     if(i == 10):
+    #         breakpoint()
 
-base_ds = get_coco_api_from_dataset(dataset_val)
-
-device = torch.device(args.device)
-
-test_stats, coco_evaluator = evaluate(model, criterion, postprocessors, \
-    data_loader_val, base_ds, device, args.output_dir)
-
+    # if coco_evaluator is not None:
+    #     coco_evaluator.accumulate()
+    #     coco_evaluator.summarize()
+    
+    # breakpoint()
