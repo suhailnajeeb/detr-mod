@@ -149,8 +149,30 @@ class ConvertCocoPolysToMask(object):
 
 #     raise ValueError(f'unknown {image_set}')
 
-def make_coco_transforms(image_set):
+def make_rdd_transforms(image_set):
+    normalize = T.Compose([
+        T.ToTensor(),
+        T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
 
+    if image_set == 'train':
+        return T.Compose([
+            T.RandomHorizontalFlip(),
+            T.FixedResize((600, 600)),
+            normalize,
+        ])
+    if image_set == 'val':
+        return T.Compose([
+            T.FixedResize((600, 600)),
+            normalize,
+        ])
+    if image_set == 'test':
+        return T.Compose([
+            T.FixedResize((600, 600)),
+            normalize,
+        ])
+
+def make_coco_transforms(image_set):
     normalize = T.Compose([
         T.ToTensor(),
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
