@@ -72,6 +72,37 @@ def hflip(image, target):
 
     return flipped_image, target
 
+def fixed_resize(image, target, size):
+    # size can be min_size (scalar) or (w, h) tuple
+    rescaled_image = F.resize(image, size)
+
+    if target is None:
+        return rescaled_image, None
+
+    ratios = tuple(float(s) / float(s_orig) for s, s_orig in zip(rescaled_image.size, image.size))
+    ratio_width, ratio_height = ratios
+
+    target = target.copy()
+    if "boxes" in target:
+        boxes = target["boxes"]
+        scaled_boxes = boxes * torch.as_tensor([ratio_width, ratio_height, ratio_width, ratio_height])
+        target["boxes"] = scaled_boxes
+
+    if "area" in target:
+        area = target["area"]
+        scaled_area = area * (ratio_width * ratio_height)
+        target["area"] = scaled_area
+
+    h, w = size
+    target["size"] = torch.tensor([h, w])
+
+    if "masks" in target:
+        target['masks'] = interpolate(
+            target['masks'][:, None].float(), size, mode="nearest")[:, 0] > 0.5
+
+    return rescaled_image, target
+
+
 
 def resize(image, target, size, max_size=None):
     # size can be min_size (scalar) or (w, h) tuple
@@ -187,6 +218,12 @@ class RandomHorizontalFlip(object):
             return hflip(img, target)
         return img, target
 
+class FixedResize(object):
+    def __init__(self, size):
+        self.size = size
+
+    def __call__(self, img, target):
+        return fixed_resize(img, target, self.size)
 
 class RandomResize(object):
     def __init__(self, sizes, max_size=None):
