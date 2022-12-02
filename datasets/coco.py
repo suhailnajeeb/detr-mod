@@ -178,17 +178,17 @@ def make_coco_transforms(image_set):
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
-    scales = [480, 512, 544, 576, 608, 640]#, 672, 704, 736, 768, 800]          # Limit scales to 640
+    scales = [480, 512, 544, 576, 600]#, 640, 672, 704, 736, 768, 800]          # Limit scales to 600
 
     if image_set == 'train':
         return T.Compose([
             T.RandomHorizontalFlip(),
             T.RandomSelect(
-                T.RandomResize(scales, max_size=1200),                          # Change max_size to 1200
+                T.RandomResize(scales, max_size=600),                          # Change max_size to 1200
                 T.Compose([
                     T.RandomResize([400, 500, 600]),
                     T.RandomSizeCrop(384, 600),
-                    T.RandomResize(scales, max_size=1200),                      # Change max_size to 1200 from 1333
+                    T.RandomResize(scales, max_size=600),                      # Change max_size to 1200 from 1333
                 ])
             ),
             normalize,
@@ -196,13 +196,13 @@ def make_coco_transforms(image_set):
 
     if image_set == 'val':
         return T.Compose([
-            T.RandomResize([600], max_size=1200),                               # Changes
+            T.RandomResize([600], max_size=600),                               # Changes
             normalize,
         ])
     
     if image_set == 'test':
         return T.Compose([
-            T.RandomResize([600], max_size=1200),                               # Changes
+            T.RandomResize([600], max_size=600),                               # Changes
             normalize,
         ])
 
@@ -219,6 +219,6 @@ def build(image_set, args):
     }
 
     img_folder, ann_file = PATHS[image_set]
-    #dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms(image_set), return_masks=args.masks)
-    dataset = CocoDetection(img_folder, ann_file, transforms=make_rdd_transforms(image_set), return_masks=args.masks)
+    dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms(image_set), return_masks=args.masks)
+    #dataset = CocoDetection(img_folder, ann_file, transforms=make_rdd_transforms(image_set), return_masks=args.masks)
     return dataset
