@@ -102,7 +102,7 @@ class ArgsModel:
     def __init__(self):
         self.dataset_file = 'coco'
         self.num_classes = 5
-        self.device = 'cpu'
+        self.device = 'cuda'
         self.num_queries = 100
         self.aux_loss = True
         self.masks = False
@@ -132,10 +132,9 @@ def load_model_from_ckp(ckp_path):
 
 def load_model_all_from_ckp(ckp_path):
     model, criterion, postprocessors = build_model(ArgsModel())
-    model.load_state_dict(torch.load(ckp_path, map_location='cpu')['model'])
+    model.load_state_dict(torch.load(ckp_path, map_location = 'cpu')['model'])
     model.eval();
     return model, criterion, postprocessors
-
 
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches

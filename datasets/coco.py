@@ -158,37 +158,80 @@ def make_rdd_transforms(image_set):
     if image_set == 'train':
         return T.Compose([
             T.RandomHorizontalFlip(),
-            T.FixedResize((600, 600)),
+            T.FixedResize((800, 800)),
             normalize,
         ])
     if image_set == 'val':
         return T.Compose([
-            T.FixedResize((600, 600)),
+            T.FixedResize((800, 800)),
             normalize,
         ])
     if image_set == 'test':
         return T.Compose([
-            T.FixedResize((600, 600)),
+            T.FixedResize((800, 800)),
             normalize,
         ])
 
+# def make_coco_transforms(image_set):
+#     normalize = T.Compose([
+#         T.ToTensor(),
+#         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+#     ])
+
+#     scales = [480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800]          # Limit scales to 600
+
+#     if image_set == 'train':
+#         return T.Compose([
+#             T.RandomHorizontalFlip(),
+#             T.RandomSelect(
+#                 T.RandomResize(scales, max_size=800),                          # Change max_size to 1200
+#                 T.Compose([
+#                     T.RandomResize([400, 500, 600]),
+#                     T.RandomSizeCrop(384, 600),
+#                     T.RandomResize(scales, max_size=800),                      # Change max_size to 1200 from 1333
+#                 ])
+#             ),
+#             normalize,
+#         ])
+
+#     #if image_set == 'train':
+#     #    return T.Compose([
+#     #        T.RandomResize([800], max_size=1333),                               # Changes
+#     #        normalize,
+#     #    ])
+
+#     if image_set == 'val':
+#         return T.Compose([
+#             T.RandomResize([800], max_size=1333),                               # Changes
+#             normalize,
+#         ])
+    
+#     if image_set == 'test':
+#         return T.Compose([
+#             T.RandomResize([800], max_size=1333),                               # Changes
+#             normalize,
+#         ])
+
+#     raise ValueError(f'unknown {image_set}')
+
 def make_coco_transforms(image_set):
+
     normalize = T.Compose([
         T.ToTensor(),
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
-    scales = [480, 512, 544, 576, 600]#, 640, 672, 704, 736, 768, 800]          # Limit scales to 600
+    scales = [480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800]
 
     if image_set == 'train':
         return T.Compose([
             T.RandomHorizontalFlip(),
             T.RandomSelect(
-                T.RandomResize(scales, max_size=600),                          # Change max_size to 1200
+                T.RandomResize(scales, max_size=1200),
                 T.Compose([
                     T.RandomResize([400, 500, 600]),
                     T.RandomSizeCrop(384, 600),
-                    T.RandomResize(scales, max_size=600),                      # Change max_size to 1200 from 1333
+                    T.RandomResize(scales, max_size=1200),
                 ])
             ),
             normalize,
@@ -196,15 +239,16 @@ def make_coco_transforms(image_set):
 
     if image_set == 'val':
         return T.Compose([
-            T.RandomResize([600], max_size=600),                               # Changes
+            T.RandomResize([800], max_size=1200),
             normalize,
         ])
     
     if image_set == 'test':
         return T.Compose([
-            T.RandomResize([600], max_size=600),                               # Changes
+            T.RandomResize([800], max_size=1200),
             normalize,
         ])
+
 
     raise ValueError(f'unknown {image_set}')
 

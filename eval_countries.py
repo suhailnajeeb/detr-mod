@@ -33,7 +33,7 @@ country_shorthands = {
     'Japan': 'JP',
     'Norway': 'NW',
     'United_States': 'US',
-    'combined': 'combined'
+    'combined': 'holdout'
 }
 
 def get_args_parser():
@@ -125,20 +125,24 @@ def get_args_parser():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
     args = parser.parse_args()
-    
+    device = torch.device(args.device)
+
     model_path = args.output_dir + 'checkpoint.pth'
 
     model, criterion, postprocessors = load_model_all_from_ckp(model_path)
+
+    model.to(device)
+    criterion.to(device)
 
     data_root = args.coco_path
 
     for country in country_list:
         print("Processing data for: " + country)
 
-        country_dir = os.path.join(data_root, 'coco_' + country_shorthands[country])
+        country_dir = os.path.join(data_root, 'holdout', 'coco_' + country_shorthands[country])
         args.coco_path = os.path.join(country_dir)
 
-        dataset_val = build_dataset(image_set='train', args=args)
+        dataset_val = build_dataset(image_set='val', args=args)
 
         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
 
@@ -146,8 +150,6 @@ if __name__ == "__main__":
                                         drop_last=False, collate_fn=utils.collate_fn, num_workers=args.num_workers)
 
         base_ds = get_coco_api_from_dataset(dataset_val)
-
-        device = torch.device(args.device)
 
         test_stats, coco_evaluator = evaluate(model, criterion, postprocessors, \
             data_loader_val, base_ds, device, args.output_dir)

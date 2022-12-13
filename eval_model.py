@@ -104,13 +104,16 @@ def get_args_parser():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
     args = parser.parse_args()
-
+    device = torch.device(args.device)
 
     model_path = args.output_dir + 'checkpoint.pth'
 
     model, criterion, postprocessors = load_model_all_from_ckp(model_path)
 
-    dataset_val = build_dataset(image_set='val', args=args)
+    model.to(device)
+    criterion.to(device)
+
+    dataset_val = build_dataset(image_set='test', args=args)
 
     sampler_val = torch.utils.data.SequentialSampler(dataset_val)
 
@@ -119,7 +122,6 @@ if __name__ == "__main__":
 
     base_ds = get_coco_api_from_dataset(dataset_val)
 
-    device = torch.device(args.device)
 
     test_stats, coco_evaluator = evaluate(model, criterion, postprocessors, \
         data_loader_val, base_ds, device, args.output_dir)
