@@ -34,4 +34,17 @@ combined_05: Training with default DETR settings
                 Resize: coco_transforms with scales up to 800
                 and max-size: 800
 
+holdout_00:
+- job_id: 
+- default DETR settings
+- LR: 1e-5      LR backbone: 1e-6
+- Rescale/Random Crop: Yes  up to 800
+- max-size: 1200
 
+holdout_01:
+- job_id: 42559591
+- command: sbatch train_holdout.slurm
+- default DETR settings
+- LR: 1e-5      LR backbone: 1e-6
+- Rescale/Random Crop: Yes  up to 800
+- max-size: 1333
