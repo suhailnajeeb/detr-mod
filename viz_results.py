@@ -4,12 +4,14 @@ import numpy as np
 import seaborn as sns
 
 log_paths = {
-    'model_0': 'outputs/combined_00/log.txt',
+#    'model_0': 'outputs/combined_00/log.txt',
 #    'model_1': 'outputs/combined_01/log.txt',
 #    'model_2': 'outputs/combined_02/log.txt',
 #    'model_3': 'outputs/combined_03/log.txt',
 #    'model_4': 'outputs/combined_04/log.txt',
-    'model_5': 'outputs/combined_05/log.txt',
+#    'model_5': 'outputs/combined_05/log.txt',
+    'Res:1200': 'outputs/holdout_00/log.txt',
+    'Res:1333': 'outputs/holdout_01/log.txt'
 }
 
 fig, axs = plt.subplots(ncols=2, figsize=(16, 5))
@@ -49,5 +51,5 @@ axs[1].set_title(field)
 axs[1].legend()
 
 plt.title('mAP and loss')
-
-plt.show()
+plt.savefig('fig.png')
+#plt.show()

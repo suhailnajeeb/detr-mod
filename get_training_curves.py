@@ -2,8 +2,8 @@ from util.plot_utils import plot_logs
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-outDir = 'outputs/holdout_00'
-figDir = 'outputs/holdout_00'
+outDir = 'outputs/holdout_01'
+figDir = 'outputs/holdout_01'
 
 # ensure figdir exists
 Path(figDir).mkdir(parents=True, exist_ok=True)
