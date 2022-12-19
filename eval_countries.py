@@ -142,7 +142,7 @@ if __name__ == "__main__":
         country_dir = os.path.join(data_root, 'holdout', 'coco_' + country_shorthands[country])
         args.coco_path = os.path.join(country_dir)
 
-        dataset_val = build_dataset(image_set='val', args=args)
+        dataset_val = build_dataset(image_set='test', args=args)
 
         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
 
