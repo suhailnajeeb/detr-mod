@@ -48,3 +48,67 @@ holdout_01:
 - LR: 1e-5      LR backbone: 1e-6
 - Rescale/Random Crop: Yes  up to 800
 - max-size: 1333
+
+ft_IN_00: (Fine-tuning on INDIA)
+- job_id: 42905411
+- command: sbatch finetune_india.slurm
+- LR/LR Backbone/Optimizer: Resume
+- max-size: 1200
+
+ft_IN_01: (Fine-tuning on INDIA)
+- job_id: 42905520
+- command: sbatch finetune_india.slurm
+- LR: 1e-5      LR Backbone: 1e-6
+- max-size: 1200
+
+ft_JP_00: (Fine-tuning on JAPAN)
+- job_id: 42905554
+- command: sbatch finetune_india.slurm
+- LR/LR Backbone/Optimizer: Resume
+- max-size: 1200
+
+ft_JP_01: (Fine-tuning on JAPAN)
+- job_id: 42905717
+- command: sbatch finetune_india.slurm
+- LR: 1e-5      LR Backbone: 1e-6
+- max-size: 1200
+
+ft_US_00: (Fine-tuning on USA)
+- job_id: 42911217
+- command: sbatch finetune_usa.slurm
+- LR/LR Backbone/Optimizer: Resume
+- max-size: 1200
+
+ft_US_01: (Fine-tuning on USA)
+- job_id: 42911218
+- command: sbatch finetune_usa.slurm
+- LR: 1e-5      LR Backbone: 1e-6
+- max-size: 1200
+
+ft_CZ_00: (Fine-tuning on Czech)
+- job_id: 42911506
+- command: sbatch finetune_czech.slurm
+- LR/LR Backbone/Optimizer: Resume
+- max-size: 1200
+
+ft_NW_00: (Fine-tuning on Norway)
+- job_id: 42979649
+- command: sbatch finetune_norway.slurm
+- LR/LR Backbone/Optimizer: Resume
+- max-size: 1200
+
+ft_CD_00: (Fine-tuning on China Drone)
+- job_id: 42980770
+- command: sbatch finetune_china_drone.slurm
+- LR/LR Backbone/Optimizer: Resume
+- max-size: 1200
+
+ft_CM_00: (Fine-tuning on China Motorbike)
+- job_id: 42981928
+- command: sbatch finetune_china_motorbike.slurm
+- LR/LR Backbone/Optimizer: Resume
+- max-size: 1200
+
+squeue --job 42980770
+tail -f -n 1 slurm-42980770.out
+scancel 42980770
