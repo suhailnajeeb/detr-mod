@@ -1,7 +1,8 @@
 from prettytable import PrettyTable
 
-table_name = 'table_name.csv'
-output_path = 'output'
+table_name = 'nms_models.csv'
+#output_path = 'slurm-43027888.out'
+output_path = 'slurm-43168182.out'
 
 with open(output_path, 'r') as f:
     output = f.readlines()
@@ -20,5 +21,5 @@ for line in output:
 print(table)
 
 # Save th table to a CSV file: 
-with open(table_name, 'w') as f:
-    table.write_csv()
+with open(table_name, 'w') as f: 
+    f.write(table.get_csv_string())

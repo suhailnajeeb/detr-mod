@@ -1,4 +1,4 @@
-from engine import evaluate
+from engine import evaluate_nms
 from models import build_model
 from datasets import build_dataset
 import os
@@ -16,13 +16,13 @@ from datasets.coco_eval import CocoEvaluator
 
 country_list = [
     "India",
-#    "Japan",
-#    "Czech",
-#    "China_MotorBike",
-#    "China_Drone",
-#    "Norway",
-#    "United_States",
-#    "combined"
+    "Japan",
+    "Czech",
+    "China_MotorBike",
+    "China_Drone",
+    "Norway",
+    "United_States",
+    "combined"
 ]
 
 country_shorthands = {
@@ -152,5 +152,5 @@ if __name__ == "__main__":
 
         base_ds = get_coco_api_from_dataset(dataset_val)
 
-        test_stats, coco_evaluator = evaluate(model, criterion, postprocessors, \
+        test_stats, coco_evaluator = evaluate_nms(model, criterion, postprocessors, \
             data_loader_val, base_ds, device, args.output_dir)

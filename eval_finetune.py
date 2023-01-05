@@ -16,12 +16,12 @@ from datasets.coco_eval import CocoEvaluator
 
 country_list = [
     "India",
-#    "Japan",
-#    "Czech",
-#    "China_MotorBike",
-#    "China_Drone",
-#    "Norway",
-#    "United_States",
+    "Japan",
+    "Czech",
+    "China_MotorBike",
+    "China_Drone",
+    "Norway",
+    "United_States",
 #    "combined"
 ]
 
@@ -127,21 +127,27 @@ if __name__ == "__main__":
     args = parser.parse_args()
     device = torch.device(args.device)
 
-    #model_path = args.output_dir + 'checkpoint.pth'
-    model_path = args.output_dir
-
-    model, criterion, postprocessors = load_model_all_from_ckp(model_path)
-
-    model.to(device)
-    criterion.to(device)
-
     data_root = args.coco_path
 
     for country in country_list:
         print("Processing data for: " + country)
 
-        country_dir = os.path.join(data_root, 'holdout', 'coco_' + country_shorthands[country])
-        args.coco_path = country_dir
+        country_code = country_shorthands[country]
+
+        data_path = os.path.join(data_root, 'holdout', 'coco_' + country_code)       
+        args.coco_path = data_path
+
+        model_name = 'ft_' + country_code + '_00'
+        model_path = os.path.join(args.output_dir, model_name, 'checkpoint.pth')
+
+        print('Loading model: ' + model_name)
+
+        model, criterion, postprocessors = load_model_all_from_ckp(model_path)
+        model.to(device)
+        criterion.to(device)
+
+        print('Evaluating on dataset: ' + data_path)
+
 
         dataset_val = build_dataset(image_set='test', args=args)
 
