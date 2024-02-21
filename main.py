@@ -16,6 +16,8 @@ from datasets import build_dataset, get_coco_api_from_dataset
 from engine import evaluate, train_one_epoch
 from models import build_model
 
+import wandb
+from haikunator import Haikunator
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Set transformer detector', add_help=False)
@@ -107,12 +109,40 @@ def get_args_parser():
     parser.add_argument('--world_size', default=1, type=int,
                         help='number of distributed processes')
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
+
+    # wandb names
+    parser.add_argument('--project_name', default = 'visdrone')
+    parser.add_argument('--run_name', default = Haikunator().haikunate())
+
     return parser
 
+def load_wandb_api_key(file_path='.wandb_api_key'):
+    """Load the wandb API key from a file."""
+    try:
+        with open(file_path, 'r') as file:
+            api_key = file.read().strip()  # Ensure any trailing whitespace is removed
+        return api_key
+    except IOError as e:
+        print(f"Error reading {file_path}: {e}")
+        return None
+
+def wandb_init(args):
+    # Load the API key from the file
+    api_key = load_wandb_api_key()
+
+    if api_key is not None:
+        # Use the API key to login
+        wandb.login(key=api_key)
+    else:
+        print("Unable to load the wandb API key.")
+
+    wandb.init(project = args.project_name, name = args.run_name, config = args)
 
 def main(args):
     utils.init_distributed_mode(args)
     print("git:\n  {}\n".format(utils.get_sha()))
+
+    wandb_init(args)
 
     if args.frozen_weights is not None:
         assert args.masks, "Frozen training is meant for segmentation only"
@@ -176,7 +206,10 @@ def main(args):
         checkpoint = torch.load(args.frozen_weights, map_location='cpu')
         model_without_ddp.detr.load_state_dict(checkpoint['model'])
 
-    output_dir = Path(args.output_dir)
+    # Create a directory for the run
+    output_dir = Path(args.output_dir) / args.run_name
+    output_dir.mkdir(parents = True, exist_ok = True)
+
     if args.resume:
         if args.resume.startswith('https'):
             checkpoint = torch.hub.load_state_dict_from_url(
@@ -198,7 +231,6 @@ def main(args):
 
     best_map = 0
     no_improvement_epochs = 0
-
 
     print("Start training")
     start_time = time.time()
@@ -245,7 +277,10 @@ def main(args):
         log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
                      **{f'test_{k}': v for k, v in test_stats.items()},
                      'epoch': epoch,
-                     'n_parameters': n_parameters}
+                     'n_parameters': n_parameters,
+                     'lr': optimizer.param_groups[0]["lr"]}
+
+        wandb.log(log_stats)
 
         if args.output_dir and utils.is_main_process():
             with (output_dir / "log.txt").open("a") as f:
@@ -276,4 +311,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.output_dir:
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
-    main(args)
+    try:
+        main(args)
+    finally:
+        wandb.finish()
