@@ -1,8 +1,9 @@
 from prettytable import PrettyTable
 
-table_name = 'nms_models.csv'
+table_name = 'holdout_00.csv'
 #output_path = 'slurm-43027888.out'
-output_path = 'slurm-43168182.out'
+#output_path = 'slurm-43168182.out'
+output_path = 'slurm-42734945.out'
 
 with open(output_path, 'r') as f:
     output = f.readlines()

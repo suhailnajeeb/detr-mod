@@ -15,14 +15,14 @@ from test_utils import load_model_all_from_ckp
 from datasets.coco_eval import CocoEvaluator
 
 country_list = [
-    "India",
+#    "India",
 #    "Japan",
 #    "Czech",
 #    "China_MotorBike",
 #    "China_Drone",
 #    "Norway",
 #    "United_States",
-#    "combined"
+    "combined"
 ]
 
 country_shorthands = {
