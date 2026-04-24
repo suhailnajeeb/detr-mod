@@ -23,3 +23,5 @@ docker/
 *.slurm
 commands.txt
 *.png
+outputs/
+results/
